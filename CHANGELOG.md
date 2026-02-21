@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/Julien-Debrauwer/PokeNexus/compare/v0.2.0...v0.3.0) (2026-02-21)
+
+
+### Features
+
+* test pokeAPI ([9f57acb](https://github.com/Julien-Debrauwer/PokeNexus/commit/9f57acbe27c47549b15d6a57631230ec7f3a39c2))
+
 ## [0.2.0](https://github.com/Julien-Debrauwer/PokeNexus/compare/v0.1.0...v0.2.0) (2026-02-21)
 
 
