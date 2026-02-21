@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/Julien-Debrauwer/PokeNexus/compare/v0.1.0...v0.2.0) (2026-02-21)
+
+
+### Features
+
+* deploy workflow on dispatch ([a925966](https://github.com/Julien-Debrauwer/PokeNexus/commit/a925966f7e491934900de46c88c37bb0cbc08b82))
+
 ## [0.1.0](https://github.com/Julien-Debrauwer/PokeNexus/compare/v0.0.1...v0.1.0) (2026-02-21)
 
 
