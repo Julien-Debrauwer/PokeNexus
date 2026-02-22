@@ -5,7 +5,10 @@
 
       <div v-if="pending">Chargement des Pokémon...</div>
 
-      <ul v-else class="grid grid-cols-10 lg:grid-cols-12 gap-[12px]">
+      <ul
+        v-else
+        class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-[12px]"
+      >
         <li v-for="pokemon in pokemons" :key="pokemon.id" class="col-span-1">
           <span class="text-xs font-medium">
             #{{ String(pokemon.id).padStart(3, "0") }}
