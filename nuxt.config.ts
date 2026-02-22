@@ -17,7 +17,12 @@ export default defineNuxtConfig({
     },
   },
   css: ["~/assets/css/main.css"],
-  modules: ["shadcn-nuxt"],
+  modules: ["shadcn-nuxt", "@nuxtjs/google-fonts"],
+  googleFonts: {
+    families: {
+      "IBM Plex Sans": [300, 400, 700],
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },
