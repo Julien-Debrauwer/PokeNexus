@@ -1,26 +1,35 @@
-export default defineEventHandler(async (event) => {
-  // 1. On appelle l'API externe (limitons à la 1ère génération pour commencer)
-  // On utilise $fetch qui est l'outil natif de Nuxt (basé sur ofetch)
-  const response: any = await $fetch(
-    "https://pokeapi.co/api/v2/pokemon?limit=151",
-  );
+export default defineCachedEventHandler(
+  async (event) => {
+    console.log(
+      "Fetching depuis l'API externe (tu ne devrais voir ça qu'une fois !)",
+    );
 
-  // 2. On nettoie et on transforme la donnée pour le Front-End
-  const pokemons = response.results.map((pokemon: any) => {
-    // Astuce : La PokéAPI ne donne pas l'ID directement dans la liste,
-    // mais il est à la fin de l'URL (ex: ".../pokemon/25/"). On l'extrait.
-    const urlParts = pokemon.url.split("/");
-    const id = urlParts[urlParts.length - 2];
+    // 1. Récupération de la liste de base
+    const response: any = await $fetch(
+      "https://pokeapi.co/api/v2/pokemon?limit=151",
+    );
 
-    return {
-      id: Number(id),
-      // On met une majuscule à la première lettre du nom
-      name: pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1),
-      // On génère l'URL de l'image officielle HD directement sans refaire d'appel API !
-      image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
-    };
-  });
+    // 2. On récupère les détails de TOUS les Pokémon en parallèle
+    // C'est lourd, mais grâce au cache, on ne le fera qu'une seule fois !
+    const detailedPokemons = await Promise.all(
+      response.results.map(async (pokemon: any) => {
+        const details: any = await $fetch(pokemon.url);
 
-  // 3. On renvoie le tableau propre
-  return pokemons;
-});
+        return {
+          id: details.id,
+          name: details.name.charAt(0).toUpperCase() + details.name.slice(1),
+          image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${details.id}.png`,
+          // On extrait un tableau simple des types (ex: ["grass", "poison"])
+          types: details.types.map((t: any) => t.type.name),
+        };
+      }),
+    );
+
+    return detailedPokemons;
+  },
+  {
+    // CONFIGURATION DU CACHE NITRO ⚡️
+    maxAge: 60 * 60 * 24, // Garde le résultat en mémoire pendant 24 heures
+    name: "pokemons-list-cache", // Nom de la clé de cache
+  },
+);
