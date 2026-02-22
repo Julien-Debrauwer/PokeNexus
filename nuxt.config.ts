@@ -21,6 +21,7 @@ export default defineNuxtConfig({
   googleFonts: {
     families: {
       "IBM Plex Sans": [300, 400, 700],
+      "Geist Mono": [300, 400, 500, 700],
     },
   },
   vite: {

@@ -1,8 +1,6 @@
 <template>
   <div class="min-h-screen bg-background p-[8px]">
     <div class="mx-auto max-w-7xl">
-      <h1 class="mb-[16px] text-4xl font-bold">PokeNexus</h1>
-
       <div v-if="pending">Chargement des Pokémon...</div>
 
       <ul
@@ -17,7 +15,7 @@
           <img
             :src="pokemon.image"
             :alt="pokemon.name"
-            class="h-full w-full object-contain"
+            class="h-auto w-full object-contain"
             loading="lazy"
           />
 
