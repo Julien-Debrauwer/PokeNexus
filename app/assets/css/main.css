@@ -1,9 +1,19 @@
+/* =============================================================================
+   Tailwind v4 – point d'entrée CSS (ne pas passer par .scss pour éviter que
+   SASS parse tw-animate-css, qui utilise la syntaxe Tailwind v4)
+   ============================================================================= */
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --container-center: true;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1440px;
   --font-geist: "Geist Mono", ui-monospace, monospace;
   --font-ibm: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
@@ -45,7 +55,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: oklch(0.93 0.008 95);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
@@ -79,7 +89,7 @@
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
+  --background: oklch(0.43 0.018 148);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
   --card-foreground: oklch(0.985 0 0);
@@ -117,9 +127,53 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-geist;
+    @apply text-foreground font-geist;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-ibm;
+  }
+}
+
+@utility container {
+  width: 100%;
+  max-width: unset;
+  margin-inline: auto;
+  padding-inline: 16px;
+  @variant sm {
+    max-width: unset;
+  }
+  @variant md {
+    max-width: unset;
+    padding-inline: 32px;
+  }
+  @variant lg {
+    max-width: unset;
+    padding-inline: 40px;
+  }
+  @variant xl {
+    max-width: unset;
+    padding-inline: 56px;
+  }
+  @variant 2xl {
+    max-width: 1320px;
+    padding-inline: 0;
+  }
+}
+
+@layer components {
+  .grid-responsive {
+    @apply grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 justify-center;
+    min-height: 0;
+  }
+  .grid-responsive > * {
+    min-height: 0;
+  }
+  .grid-gap {
+    @apply gap-[16px] xl:gap-[20px] 2xl:gap-[24px];
   }
 }
