@@ -1,32 +1,85 @@
 <template>
-  <div class="min-h-screen bg-background p-[8px]">
-    <div class="mx-auto max-w-7xl">
-      <div v-if="pending">Chargement des Pokémon...</div>
-
-      <ul
-        v-else
-        class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-[12px]"
-      >
-        <li v-for="pokemon in pokemons" :key="pokemon.id" class="col-span-1">
-          <span class="text-xs font-medium">
-            #{{ String(pokemon.id).padStart(3, "0") }}
-          </span>
-
-          <img
-            :src="pokemon.image"
-            :alt="pokemon.name"
-            class="h-auto w-full object-contain"
-            loading="lazy"
-          />
-
-          <h2 class="mt-[8px] font-semibold">{{ pokemon.name }}</h2>
-        </li>
-      </ul>
-    </div>
+  <div
+    class="bg-background flex-1 min-h-0 flex flex-col py-[80px] overflow-hidden"
+  >
+    <p v-if="pending" class="flex items-center justify-center">
+      Chargement du Pokémon...
+    </p>
+    <article v-else class="flex-1 min-h-0 flex flex-col overflow-hidden w-full">
+      <template v-if="pokemon">
+        <div class="grid-responsive grid-gap min-h-0 flex-1 overflow-hidden">
+          <div class="col-span-4 lg:col-span-6 min-h-0 overflow-hidden">
+            <img
+              :src="pokemon.image"
+              :alt="pokemon?.name"
+              loading="lazy"
+              class="h-full w-full object-contain min-h-0"
+            />
+          </div>
+          <div class="col-span-4 lg:col-span-6 min-h-0 overflow-hidden">
+            <h2 class="mt-[8px] font-semibold font-geist text-[72px]">
+              {{ pokemon?.name }}
+            </h2>
+            <p class="text-lgajou text-muted-foreground">
+              # {{ String(pokemon?.id).padStart(3, "0") }}
+            </p>
+            <audio
+              v-if="cryUrl"
+              ref="cryAudioRef"
+              :src="cryUrl"
+              preload="auto"
+              class="sr-only"
+              @canplay="onCryCanPlay"
+            />
+            <button
+              v-if="cryUrl"
+              type="button"
+              class="mt-4 inline-flex w-fit items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              @click="playCry"
+            >
+              <span aria-hidden="true">🔊</span>
+              Écouter le cri
+            </button>
+          </div>
+        </div>
+      </template>
+    </article>
   </div>
 </template>
 <script setup lang="ts">
-// Nuxt appelle notre route interne au moment du rendu de la page
-// 'data' contiendra le tableau, 'pending' nous dit si ça charge
-const { data: pokemons, pending } = await useFetch("/api/pokemons");
+type PokemonRandom = {
+  id: number;
+  name: string;
+  image: string;
+  types: string[];
+  cries: { latest: string; legacy: string } | null;
+};
+const { data: pokemon, pending } = await useFetch<PokemonRandom>(
+  "/api/pokemon/random",
+);
+
+const cryUrl = computed(() => {
+  const c = pokemon.value?.cries;
+  if (!c) return null;
+  return c.latest || null;
+});
+
+const cryAudioRef = ref<HTMLAudioElement | null>(null);
+const hasAutoPlayedForCry = ref<string | null>(null);
+
+function playCry() {
+  if (!cryAudioRef.value) return;
+  cryAudioRef.value.play().catch(() => {});
+}
+
+function onCryCanPlay() {
+  const url = cryUrl.value;
+  if (!url || hasAutoPlayedForCry.value === url) return;
+  hasAutoPlayedForCry.value = url;
+  playCry();
+}
+
+watch(cryUrl, (url) => {
+  if (!url) hasAutoPlayedForCry.value = null;
+});
 </script>
