@@ -53,14 +53,8 @@
   </div>
 </template>
 <script setup lang="ts">
-type PokemonRandom = {
-  id: number;
-  name: string;
-  description: string | null;
-  image: string;
-  types: string[];
-  cries: { latest: string; legacy: string } | null;
-};
+import type { PokemonRandom } from "~/types/pokemon";
+
 const { data: pokemon, pending } = await useFetch<PokemonRandom>(
   "/api/pokemon/random",
 );

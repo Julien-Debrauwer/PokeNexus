@@ -1,34 +1,46 @@
-export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, "id");
+import type { PokeAPIPokemonSpecies } from "~/types/pokeapi";
+import type { PokemonDescription } from "~/types/pokemon";
 
-  try {
-    const data: any = await $fetch(
-      `https://pokeapi.co/api/v2/pokemon-species/${id}`,
-    );
+export default defineEventHandler(
+  async (event): Promise<PokemonDescription> => {
+    const id = getRouterParam(event, "id");
 
-    const frEntry = data.flavor_text_entries?.find(
-      (e: { language: { name: string } }) => e.language.name === "fr",
-    );
+    try {
+      const data = await $fetch<PokeAPIPokemonSpecies>(
+        `https://pokeapi.co/api/v2/pokemon-species/${id}`,
+      );
 
-    if (!frEntry) {
+      const frEntry = data.flavor_text_entries?.find(
+        (e) => e.language.name === "fr",
+      );
+
+      if (!frEntry) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: "Description en français non disponible",
+        });
+      }
+
+      const description = frEntry.flavor_text
+        .replace(/\f/g, " ")
+        .replace(/\n/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      return { description };
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "statusCode" in error &&
+        (error as { statusCode: number }).statusCode === 404
+      ) {
+        throw error;
+      }
       throw createError({
         statusCode: 404,
-        statusMessage: "Description en français non disponible",
+        statusMessage: "Pokémon introuvable",
       });
     }
-
-    const description = (frEntry.flavor_text as string)
-      .replace(/\f/g, " ")
-      .replace(/\n/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    return { description };
-  } catch (error: any) {
-    if (error.statusCode === 404) throw error;
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Pokémon introuvable",
-    });
-  }
-});
+  },
+);
