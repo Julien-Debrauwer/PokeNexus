@@ -18,6 +18,10 @@ logs
 .fleet
 .idea
 
+# Local project context files (not committed)
+BACKLOG.md
+GENESIS.md
+
 # Local env files
 .env
 .env.*

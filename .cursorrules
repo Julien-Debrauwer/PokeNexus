@@ -26,3 +26,81 @@ Avant de créer un nouveau type, vérifier que `~/types/pokeapi.ts` ou `~/types/
 
 - Utiliser les composables existants (`useCapitalize`) avant d'en créer de nouveaux.
 - Ne pas ajouter de dépendances sans accord explicite.
+
+## Bonnes pratiques Nuxt
+
+- Toujours utiliser `useFetch` ou `useAsyncData` pour les appels de données côté client (jamais `fetch` directement dans `onMounted`).
+- Utiliser `useHead` / `useSeoMeta` pour les métadonnées SEO dans chaque page.
+- Préférer les server routes Nitro (`server/api/`) pour masquer les clés d'API et centraliser la logique métier.
+- Utiliser `definePageMeta` pour les layouts, middlewares et métadonnées de route.
+- Les composants auto-importés : ne pas importer manuellement ce qui est dans `app/components/`.
+- Favoriser les composables auto-importés de `app/composables/`.
+- Ne jamais muter directement `useState` depuis plusieurs endroits — encapsuler dans un composable.
+
+## Tailwind CSS
+
+- Utiliser Tailwind **au maximum** pour tous les styles ; éviter les `<style>` scoped sauf cas exceptionnel justifié.
+- Privilégier les **arbitrary values** Tailwind (`w-[420px]`, `bg-[#1a1a2e]`, `grid-cols-[repeat(auto-fill,minmax(200px,1fr))]`) plutôt que des classes CSS personnalisées.
+- Ne pas étendre `tailwind.config` sans accord explicite ; préférer les arbitrary values.
+- Ordre des classes : suivre l'ordre recommandé par Prettier Tailwind plugin (layout → spacing → typography → colors → effects).
+
+## Composants shadcn
+
+- Utiliser les composants **shadcn-vue** comme base pour tout élément d'UI (boutons, modales, cards, inputs, etc.).
+- Adapter les composants shadcn au design du projet plutôt que de créer des composants from scratch.
+- Les composants shadcn se trouvent dans `app/components/ui/` — vérifier leur existence avant d'en installer de nouveaux.
+- Personnaliser via les props et les slots shadcn, ou en composant des primitives ; éviter de modifier directement les fichiers `ui/`.
+
+## Tests
+
+- **Chaque fonctionnalité doit être testée au maximum.**
+- Écrire les tests avant ou en parallèle du code (approche TDD/BDD encouragée).
+- Tester les server routes avec des tests d'intégration (Nitro test utils ou Vitest).
+- Tester les composants Vue avec Vitest + Vue Test Utils (ou Testing Library Vue).
+- Couvrir : cas nominal, cas limites, cas d'erreur.
+- Les mocks doivent être limités aux dépendances externes (API PokeAPI) ; ne pas mocker les modules internes du projet.
+
+## Accessibilité (a11y)
+
+- **Chaque fonctionnalité doit répondre aux exigences d'accessibilité WCAG 2.1 niveau AA.**
+- Tous les éléments interactifs doivent être accessibles au clavier (`tabindex`, `focus-visible`).
+- Utiliser les rôles ARIA appropriés (`role`, `aria-label`, `aria-describedby`, `aria-live`) quand les éléments HTML sémantiques ne suffisent pas.
+- Assurer un contraste suffisant (ratio ≥ 4.5:1 pour le texte normal, ≥ 3:1 pour le texte large).
+- Toujours fournir des alternatives textuelles aux images (`alt`) et aux icônes.
+- Tester l'accessibilité avec `axe-core` ou équivalent dans les tests unitaires/e2e.
+
+## SEO
+
+- **Chaque page doit définir ses métadonnées SEO via `useSeoMeta` ou `useHead`.**
+- Inclure au minimum : `title`, `description`, `og:title`, `og:description`, `og:image`.
+- Utiliser des URLs canoniques (`link rel="canonical"`) sur les pages paginées ou dupliquées.
+- Les pages de détail (ex. fiche Pokémon) doivent avoir un titre et une description dynamiques basés sur les données.
+- Préférer le rendu SSR/SSG pour les pages publiques afin d'assurer l'indexabilité.
+- Structurer les données avec `application/ld+json` (JSON-LD) quand pertinent (ex. fiches Pokémon → `ItemPage` ou schéma custom).
+
+## Plans détaillés
+
+- **Avant toute nouvelle fonctionnalité non triviale, un plan détaillé doit être rédigé.**
+- Ce plan est étudié à l'aide des outils disponibles (recherche web, analyse de code, etc.) avant d'être finalisé.
+- Le plan validé est sauvegardé dans `docs/plans/` au format Markdown (ex. `docs/plans/feature-pokemon-list.md`).
+- Le plan doit inclure : objectif, composants impactés, étapes d'implémentation, critères de test, considérations a11y et SEO.
+
+## Clean Code
+
+- **Chaque fonctionnalité doit respecter les standards clean code.**
+- Nommer les variables, fonctions et composants de manière explicite et intentionnelle (pas d'abréviations obscures).
+- Une fonction = une responsabilité. Extraire la logique complexe dans des composables ou des utilitaires dédiés.
+- Éviter les blocs de code dupliqués — DRY (Don't Repeat Yourself).
+- Limiter la profondeur d'imbrication (max 3 niveaux) ; préférer le early return.
+- Supprimer le code mort, les `console.log` de debug et les commentaires obsolètes avant de commiter.
+- Les commentaires expliquent le **pourquoi**, pas le **quoi** (le code doit être auto-documenté).
+
+## Langue
+
+- Tout le code, les commentaires, les noms de variables/fonctions/composants, les messages de commit et la documentation technique sont **en anglais**.
+- Les plans dans `docs/plans/` sont rédigés en anglais.
+
+## Évolution des règles
+
+- À chaque bonne pratique identifiée et validée sur le projet, mettre à jour ce fichier **et** `CLAUDE.md` pour la pérenniser.
+- À chaque mauvaise pratique identifiée, l'ajouter explicitement en tant qu'interdiction dans la section concernée.
