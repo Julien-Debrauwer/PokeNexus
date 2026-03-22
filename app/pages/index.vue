@@ -23,6 +23,12 @@
             <p class="text-lgajou text-muted-foreground">
               # {{ String(pokemon?.id).padStart(3, "0") }}
             </p>
+            <p
+              v-if="pokemon.description"
+              class="mt-4 max-w-xl text-muted-foreground"
+            >
+              {{ pokemon.description }}
+            </p>
             <audio
               v-if="cryUrl"
               ref="cryAudioRef"
@@ -50,6 +56,7 @@
 type PokemonRandom = {
   id: number;
   name: string;
+  description: string | null;
   image: string;
   types: string[];
   cries: { latest: string; legacy: string } | null;
