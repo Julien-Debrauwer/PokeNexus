@@ -1,11 +1,25 @@
+import { capitalizeText } from "~/utils/capitalizeText";
 import type { PokeAPIPokemon, PokeAPIPokemonSpecies } from "~/types/pokeapi";
 import type { PokemonRandom } from "~/types/pokemon";
 
 export default defineEventHandler(async (): Promise<PokemonRandom> => {
   const randomId = Math.floor(Math.random() * 151) + 1;
-  const data = await $fetch<PokeAPIPokemon>(
-    `https://pokeapi.co/api/v2/pokemon/${randomId}`,
-  );
+
+  let data: PokeAPIPokemon;
+  try {
+    data = await $fetch<PokeAPIPokemon>(
+      `https://pokeapi.co/api/v2/pokemon/${randomId}`,
+    );
+  } catch (error) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: "PokeAPI unavailable",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch pokemon data",
+    });
+  }
 
   let description: string | null = null;
   try {
@@ -23,12 +37,12 @@ export default defineEventHandler(async (): Promise<PokemonRandom> => {
         .trim();
     }
   } catch {
-    // pas de description si l'espèce échoue
+    // description remains null if species fetch fails
   }
 
   return {
     id: data.id,
-    name: data.name.charAt(0).toUpperCase() + data.name.slice(1),
+    name: capitalizeText(data.name),
     description,
     image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.id}.png`,
     types: data.types.map((t) => t.type.name),

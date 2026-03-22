@@ -1,3 +1,4 @@
+import { capitalizeText } from "~/utils/capitalizeText";
 import type { PokeAPIPokemon } from "~/types/pokeapi";
 import type { PokemonDetail } from "~/types/pokemon";
 
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event): Promise<PokemonDetail> => {
 
     return {
       id: data.id,
-      name: data.name.charAt(0).toUpperCase() + data.name.slice(1),
+      name: capitalizeText(data.name),
       image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${data.id}.png`,
       types: data.types.map((t) => t.type.name),
       height: data.height / 10, // metres
